@@ -1,0 +1,6 @@
+- hosts: localhost
+  gather_facts: no
+  roles:
+  - role: /root/task19/Multi-Node-K8S-Cluster-On-AWS-Using-Ansible/ec2
+
+

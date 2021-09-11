@@ -1,0 +1,92 @@
+---
+# tasks file for master_node
+- name: Installing Docker Services
+  package:
+    name: docker
+    state: present
+
+- name: Enabling Docker Services
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  changed_when: false
+
+- name: Configuring yum repo for K8S Services
+  yum_repository:
+    name: kubernetes
+    description: kubernetes repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+    gpgcheck: 1
+    repo_gpgcheck: 1
+    enabled: 1
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  register: a
+  changed_when: false
+
+- name: Installing k8s softwares for master
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - kubeadm
+    - iproute-tc
+    - kubectl
+- name: Enabling Kubelet Services
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+
+- name: Pulling Required K8S Images For Master Node
+  command: kubeadm config images pull
+
+- name: Changing CGROUP Driver of Docker To systemd
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+      }
+
+- name: Restarting Docker Services
+  service:
+    name: docker
+    state: restarted
+
+
+- name: Setting Up IP Tables
+  copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+
+- name: Restarting sysctl
+  shell: "sudo sysctl --system"
+
+- name: Initializing Kubeadm Networking For K8S Cluster
+  shell: "kubeadm init --pod-network-cidr=10.240.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
+
+- name: Creating .kube Directory
+  file:
+    path: $HOME/.kube
+    state: directory
+
+- name: Copying Config File of K8S Master to HOME Location
+  command: "cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
+
+- name: Changing Ownership of K8S Config File For K8S Kubectl Client
+  shell: "chown $(id -u):$(id -g) $HOME/.kube/config"
+
+- name: Configuring Flannel CNI for K8S Master
+  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+
+- name: Generating Token
+  shell: "kubeadm token  create  --print-join-command"
+  register: tokens
+  ignore_errors: yes
+
+- debug: 
+    var: tokens.stdout_lines
+ 

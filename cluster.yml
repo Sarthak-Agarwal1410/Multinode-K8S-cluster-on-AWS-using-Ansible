@@ -1,0 +1,17 @@
+- hosts: master
+  gather_facts: no
+  
+  roles:
+  - role: master_node
+  
+ 
+- hosts: slave   
+  gather_facts: no
+
+  vars_prompt:
+  - name: tokens
+    prompt: "Enter the Token To Join To Master: "
+    private: no
+  
+  roles:
+  - role: slave_node

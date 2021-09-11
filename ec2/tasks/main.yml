@@ -1,0 +1,40 @@
+---
+# tasks file for ec2
+
+- name: Launching Master Node
+  ec2:
+    aws_access_key: AKIAVARV5XONTVK3MI76
+    aws_secret_key: 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
+    key_name: "nvirginia"
+    instance_type: "t2.micro"
+    image: "ami-087c17d1fe0178315"
+    wait: "yes"
+    wait_timeout: 200
+    count: 1
+    vpc_subnet_id: "subnet-6ea60908"
+    assign_public_ip: yes
+    region: "us-east-1"
+    instance_tags:
+      Name: "Master Node"
+    state: present
+    group_id: "sg-7530a64a"
+
+- name: Launching Slave Nodes
+  ec2:
+    aws_access_key: AKIAVARV5XONTVK3MI76
+    aws_secret_key: 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
+    key_name: "nvirginia"
+    instance_type: "t2.micro"
+    image: "ami-087c17d1fe0178315"
+    wait: "yes"
+    wait_timeout: 200
+    count: 2
+    vpc_subnet_id: "subnet-6ea60908"
+    assign_public_ip: yes
+    region: "us-east-1"
+    instance_tags:
+      Name: "Slave Node"
+    state: present
+    group_id: "sg-7530a64a"
+ 
+

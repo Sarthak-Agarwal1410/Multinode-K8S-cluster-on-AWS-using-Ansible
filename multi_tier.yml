@@ -1,0 +1,5 @@
+- hosts: master
+  gather_facts: no
+  roles:
+  - role: /root/k8s_roles/deploy
+ 
