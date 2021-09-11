@@ -1,0 +1,6 @@
+[master]
+44.197.176.138 ansible_ssh_user=ec2-user
+
+[slave]
+3.235.169.186 ansible_ssh_user=ec2-user
+44.195.39.157 ansible_ssh_user=ec2-user
