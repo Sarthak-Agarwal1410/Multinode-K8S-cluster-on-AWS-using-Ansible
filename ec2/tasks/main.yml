@@ -3,8 +3,8 @@
 
 - name: Launching Master Node
   ec2:
-    aws_access_key: AKIAVARV5XONTVK3MI76
-    aws_secret_key: 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
+    aws_access_key: <aws_access_key>
+    aws_secret_key: <aws_secret_key>
     key_name: "nvirginia"
     instance_type: "t2.micro"
     image: "ami-087c17d1fe0178315"
@@ -21,8 +21,8 @@
 
 - name: Launching Slave Nodes
   ec2:
-    aws_access_key: AKIAVARV5XONTVK3MI76
-    aws_secret_key: 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
+    aws_access_key: <aws_access_key>
+    aws_secret_key: <aws_secret_key>
     key_name: "nvirginia"
     instance_type: "t2.micro"
     image: "ami-087c17d1fe0178315"
